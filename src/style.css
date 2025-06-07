@@ -332,6 +332,43 @@ input[type="text"]::placeholder {
 }
 
 @media (max-width: 650px) {
+  .appContainer {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+  }
+  .pokemonContainer{
+    width: 42vw;
+    height: auto;
+  }
+  .pokemonContainer:hover {
+    transform: scale(1);
+  }
+  .pokeball {
+    width: 120px;
+    height: 120px;
+  }
+  .pokemonDetails {
+    padding: 15px;
+    margin-top: 20px;
+    width: 100%;
+  }
+  .pokemonId {
+    font-size: 16px;
+  }
+  .pokemonName {
+    font-size: 22px;
+  }
+  .pokemonType {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .type {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+
   .pagination {
     flex-direction: column;
     gap: 10px;
