@@ -14,7 +14,7 @@ const PokemonDetail = () => {
   useEffect(() => {
     const handlePopState = () => {
       // window.location.href = "/";
-      navigateToHome("/");
+      navigateToHome("/pokemon/");
     };
     window.addEventListener("popstate", handlePopState);
     return () => {
