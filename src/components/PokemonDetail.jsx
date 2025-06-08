@@ -14,7 +14,7 @@ const PokemonDetail = () => {
   useEffect(() => {
     const handlePopState = () => {
       // window.location.href = "/";
-      navigateToHome("/pokemon/");
+      navigateToHome("/Pokemon/");
     };
     window.addEventListener("popstate", handlePopState);
     return () => {
@@ -72,7 +72,7 @@ const PokemonDetail = () => {
             {/* Previous Pokemon Link */}
             <div className="previous-pokemon-container">
               {pokemon.id > 1 ? (
-                <Link to={`/pokemon/${(previousPokemon) && previousPokemon.name}`} className="previous-pokemon">
+                <Link to={`/Pokemon/${(previousPokemon) && previousPokemon.name}`} className="previous-pokemon">
                   <span className="previous-pokemon-id">{(previousPokemon) && previousPokemon.id.toString().padStart(4, "0")}</span>
                   <span className="previous-pokemon-name">{(previousPokemon) && previousPokemon.name}</span>
                 </Link>
@@ -89,7 +89,7 @@ const PokemonDetail = () => {
             {/* Next Pokemon Link */}
             <div className="next-pokemon-container">
               {pokemon.id < 1302 ? (
-                <Link to={`/pokemon/${(nextPokemon) && nextPokemon.name}`} className="next-pokemon">
+                <Link to={`/Pokemon/${(nextPokemon) && nextPokemon.name}`} className="next-pokemon">
                   <span className="next-pokemon-id">{(nextPokemon) && nextPokemon.id.toString().padStart(4, "0")}</span>
                   <span className="next-pokemon-name">{(nextPokemon) && nextPokemon.name}</span>
                 </Link>

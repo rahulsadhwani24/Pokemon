@@ -13,7 +13,7 @@ function Home() {
   useEffect(() => {
     try {
       const fetchPokemon = async () => {
-        const API = "https://pokeapi.co/api/v2/pokemon?limit=1302";
+        const API = "https://pokeapi.co/api/v2/pokemon?limit=1025";
         const response = await fetch(API);
         const data = await response.json();
         const pokemons = data.results.map(async (currPokemon) => {
@@ -79,7 +79,7 @@ function Home() {
             return (
               <Link
               key={currPokemon.id}
-              to={`/pokemon/${encodeURIComponent(currPokemon.name)}`}
+              to={`/Pokemon/${encodeURIComponent(currPokemon.name)}`}
               >
               <Pokemon
                 pokemonImage={

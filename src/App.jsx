@@ -5,8 +5,8 @@ import { BrowserRouter, createBrowserRouter, Route, RouterProvider, Routes } fro
 
 const App = () => {
   const routes = createBrowserRouter([
-    { path: "/pokemon/", element: <Home /> },
-    { path: "/pokemon/:name", element: <PokemonDetail /> },
+    { path: "/Pokemon/", element: <Home /> },
+    { path: "/Pokemon/:name", element: <PokemonDetail /> },
   ]);
 
   return (
