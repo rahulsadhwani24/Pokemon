@@ -50,7 +50,7 @@ const PokemonDetail = () => {
     fetchPreviousPokemon();
 
     const fetchNextPokemon = async () => {
-      if (pokemon && pokemon.id < 1032) {
+      if (pokemon && pokemon.id < 1025) {
         try {
           const response = await fetch(
             `https://pokeapi.co/api/v2/pokemon/${pokemon.id + 1}`
@@ -88,7 +88,7 @@ const PokemonDetail = () => {
 
             {/* Next Pokemon Link */}
             <div className="next-pokemon-container">
-              {pokemon.id < 1302 ? (
+              {pokemon.id < 1025 ? (
                 <Link to={`/Pokemon/${(nextPokemon) && nextPokemon.name}`} className="next-pokemon">
                   <span className="next-pokemon-id">{(nextPokemon) && nextPokemon.id.toString().padStart(4, "0")}</span>
                   <span className="next-pokemon-name">{(nextPokemon) && nextPokemon.name}</span>
