@@ -8,6 +8,7 @@ import { Link, Navigate } from "react-router-dom";
 function Home() {
   const [pokemon, setPokemon] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
@@ -29,6 +30,14 @@ function Home() {
     } catch (error) {}
   }, []);
 
+  useEffect(() => {
+    if (searchInput === "") {
+      setCurrentPage(lastPage);
+    } else {
+      setLastPage(currentPage);
+      setCurrentPage(1);
+    }
+  }, [searchInput]);
 
   const LoadingCards = [
     <PokemonLoading />,
@@ -48,12 +57,11 @@ function Home() {
   const filteredPokemon = pokemon.filter((currPokemon) =>
     currPokemon.name.toLowerCase().includes(searchInput.toLowerCase())
   );
-  
+
   const PAGE_SIZE = 20;
   const totalPages = Math.ceil(filteredPokemon.length / PAGE_SIZE);
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const endIndex = startIndex + PAGE_SIZE;
-
 
   return (
     <>
@@ -78,19 +86,20 @@ function Home() {
           filteredPokemon.slice(startIndex, endIndex).map((currPokemon) => {
             return (
               <Link
-              key={currPokemon.id}
-              to={`/Pokemon/${encodeURIComponent(currPokemon.name)}`}
+                key={currPokemon.id}
+                to={`/Pokemon/${encodeURIComponent(currPokemon.name)}`}
               >
-              <Pokemon
-                pokemonImage={
-                currPokemon.sprites.other.home.front_default
-                  ? currPokemon.sprites.other.home.front_default
-                  : currPokemon.sprites.other["official-artwork"].front_default
-                }
-                pokemonName={currPokemon.name}
-                pokemonId={currPokemon.id}
-                pokemonType={currPokemon.types}
-              />
+                <Pokemon
+                  pokemonImage={
+                    currPokemon.sprites.other.home.front_default
+                      ? currPokemon.sprites.other.home.front_default
+                      : currPokemon.sprites.other["official-artwork"]
+                          .front_default
+                  }
+                  pokemonName={currPokemon.name}
+                  pokemonId={currPokemon.id}
+                  pokemonType={currPokemon.types}
+                />
               </Link>
             );
           })
@@ -98,7 +107,9 @@ function Home() {
           <>
             <h1
               style={{ width: "100%", marginLeft: "2vw", textAlign: "center" }}
-            >Loading...</h1>
+            >
+              Loading...
+            </h1>
             {LoadingCards.map((card, index) => (
               <div key={index} className="loadingCard">
                 {card}
@@ -111,21 +122,27 @@ function Home() {
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(1)}
-            >{"<<"} First</button>
+            >
+              {"<<"} First
+            </button>
 
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(currentPage - 1)}
-            >Previous</button>
+            >
+              Previous
+            </button>
 
             <span>
-              Page {currentPage} of {totalPages}
+              Page {(filteredPokemon.length > 0) ? currentPage : 0} of {totalPages}
             </span>
 
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(currentPage + 1)}
-            >Next</button>
+            >
+              Next
+            </button>
           </div>
         )}
       </div>
