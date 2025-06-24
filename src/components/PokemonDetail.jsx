@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Home from "./Home";
+import Logo from "/Logo.webp";
 
 const PokemonDetail = () => {
   const { name } = useParams();
@@ -30,7 +30,7 @@ const PokemonDetail = () => {
         );
         const data = await response.json();
         setPokemon(data);
-      } catch (error) {}
+      } catch (error) { }
     };
     fetchPokemon();
   }, [name]);
@@ -44,7 +44,7 @@ const PokemonDetail = () => {
           );
           const data = await response.json();
           setPreviousPokemon(data);
-        } catch (error) {}
+        } catch (error) { }
       }
     };
     fetchPreviousPokemon();
@@ -57,17 +57,19 @@ const PokemonDetail = () => {
           );
           const data = await response.json();
           setNextPokemon(data);
-        } catch (error) {}
+        } catch (error) { }
       }
     }
     fetchNextPokemon();
   }, [pokemon]);
 
   return (
-    <>
+    <div className="pokemon-detail-page">
+      <header className="header" style={{ paddingBlock: "20px" }}>
+        <img src={Logo} alt="Pokemon" style={{ cursor: "pointer" }} onClick={() => { navigateToHome("/Pokemon/") }} />
+      </header>
       {pokemon ? (
         <div className="pokemon-detail">
-          
           <div className="pokemon-header">
             {/* Previous Pokemon Link */}
             <div className="previous-pokemon-container">
@@ -93,12 +95,12 @@ const PokemonDetail = () => {
                   <span className="next-pokemon-id">{(nextPokemon) && nextPokemon.id.toString().padStart(4, "0")}</span>
                   <span className="next-pokemon-name">{(nextPokemon) && nextPokemon.name}</span>
                 </Link>
-              ): ( <span className="no-next-pokemon">No Next Pokemon</span> )}
+              ) : (<span className="no-next-pokemon">No Next Pokemon</span>)}
             </div>
           </div>
 
           <div className="pokemon-details-container">
-            
+
             <div className="container-left">
               <div className="pokemon-type-container">
                 <h3 className="pokemon-type-title">Type</h3>
@@ -123,11 +125,12 @@ const PokemonDetail = () => {
               </div>
             </div>
 
-            <img
-              className="pokemon-image"
-              src={pokemon.sprites.other.home.front_default}
-              alt={pokemon.name}
-            />
+            <div className="pokemon-image">
+              <img
+                src={pokemon.sprites.other.home.front_default}
+                alt={pokemon.name}
+              />
+            </div>
 
             <div className="container-right">
               <div className="height">
@@ -143,7 +146,7 @@ const PokemonDetail = () => {
           </div>
 
           <div className="pokemon-stats-moves">
-            
+
             <div className="stats-container">
               <h3>Stats:</h3>
               <ul>
@@ -168,7 +171,7 @@ const PokemonDetail = () => {
       ) : (
         <p>Loading...</p>
       )}
-    </>
+    </div>
   );
 };
 

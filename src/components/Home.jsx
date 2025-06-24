@@ -1,15 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react"
 import Logo from "/Logo.webp";
 import Pokemon from "./Pokemon";
 import PokemonLoading from "./PokemonLoading";
-import PokemonDetail from "./PokemonDetail";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-function Home() {
-  const [pokemon, setPokemon] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1);
+
+const Home = () => {
   const [searchInput, setSearchInput] = useState("");
+  const [pokemon, setPokemon] = useState([]);
+  const [allPokemons, setAllPokemons] = useState([]);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const PAGE_SIZE = 20;
 
   useEffect(() => {
     try {
@@ -23,45 +27,44 @@ function Home() {
           return pokemonData;
         });
         const pokemonData = await Promise.all(pokemons);
-        setPokemon(pokemonData);
+        setAllPokemons(pokemonData);
       };
-
       fetchPokemon();
-    } catch (error) {}
-  }, []);
+    } catch (error) { }
+  }, [])
+
+  const fetchPokemon = async () => {
+    setLoading(true);
+    try {
+      const API = `https://pokeapi.co/api/v2/pokemon?limit=${PAGE_SIZE}&offset=${offset}`;
+      const response = await fetch(API);
+      const data = await response.json();
+
+      const pokemons = await Promise.all(
+        data.results.map(async (currPokemon) => {
+          const res = await fetch(currPokemon.url);
+          return await res.json();
+        })
+      );
+
+      setPokemon((prev) => [...prev, ...pokemons]);
+      setOffset((prev) => prev + PAGE_SIZE);
+      if (!data.next) setHasMore(false);
+
+    }
+    catch (error) { }
+    finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (searchInput === "") {
-      setCurrentPage(lastPage);
-    } else {
-      setLastPage(currentPage);
-      setCurrentPage(1);
-    }
-  }, [searchInput]);
+    fetchPokemon();
+  }, []);
 
-  const LoadingCards = [
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-    <PokemonLoading />,
-  ];
-
-  const filteredPokemon = pokemon.filter((currPokemon) =>
+  const filteredPokemon = allPokemons.filter((currPokemon) =>
     currPokemon.name.toLowerCase().includes(searchInput.toLowerCase())
   );
-
-  const PAGE_SIZE = 20;
-  const totalPages = Math.ceil(filteredPokemon.length / PAGE_SIZE);
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
-  const endIndex = startIndex + PAGE_SIZE;
 
   return (
     <>
@@ -70,84 +73,71 @@ function Home() {
         <div>
           <input
             type="text"
-            name="searchPokemon"
-            id="searchPokemon"
             placeholder="Search Pokemon"
             value={searchInput}
-            onChange={(e) => {
-              setSearchInput(e.target.value);
-            }}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
       </header>
 
       <div className="appContainer">
-        {pokemon.length > 0 ? (
-          filteredPokemon.slice(startIndex, endIndex).map((currPokemon) => {
-            return (
-              <Link
-                key={currPokemon.id}
-                to={`/Pokemon/${encodeURIComponent(currPokemon.name)}`}
-              >
-                <Pokemon
-                  pokemonImage={
-                    currPokemon.sprites.other.home.front_default
-                      ? currPokemon.sprites.other.home.front_default
-                      : currPokemon.sprites.other["official-artwork"]
-                          .front_default
-                  }
-                  pokemonName={currPokemon.name}
-                  pokemonId={currPokemon.id}
-                  pokemonType={currPokemon.types}
-                />
-              </Link>
-            );
-          })
-        ) : (
+        {(searchInput.length > 0) ?
+          filteredPokemon.slice(0, 20).map((currPokemon, index) => (
+            <Link key={index} to={`/Pokemon/${encodeURIComponent(currPokemon.name)}`}>
+              <Pokemon
+                pokemonImage={
+                  currPokemon.sprites.other.home.front_default ||
+                  currPokemon.sprites.other["official-artwork"].front_default
+                }
+                pokemonName={currPokemon.name}
+                pokemonId={currPokemon.id}
+                pokemonType={currPokemon.types}
+              />
+            </Link>
+          ))
+          :
           <>
-            <h1
-              style={{ width: "100%", marginLeft: "2vw", textAlign: "center" }}
-            >
-              Loading...
-            </h1>
-            {LoadingCards.map((card, index) => (
-              <div key={index} className="loadingCard">
-                {card}
-              </div>
-            ))}
+            {
+              pokemon.length > 0 ? (
+                pokemon.map((currPokemon, index) => (
+                  <Link key={index} to={`/Pokemon/${encodeURIComponent(currPokemon.name)}`}>
+                    <Pokemon
+                      pokemonImage={
+                        currPokemon.sprites.other.home.front_default ||
+                        currPokemon.sprites.other["official-artwork"].front_default
+                      }
+                      pokemonName={currPokemon.name}
+                      pokemonId={currPokemon.id}
+                      pokemonType={currPokemon.types}
+                    />
+                  </Link>
+                ))
+              ) : (
+                <>
+                  <h1 style={{ width: "100%", textAlign: "center" }}>Loading...</h1>
+                  {Array.from({ length: 10 }).map((_, index) => (
+                    <div key={index} className="loadingCard">
+                      <PokemonLoading />
+                    </div>
+                  ))}
+                </>
+              )
+            }
+
+            {
+              hasMore && (
+                <div className="loadMoreContainer">
+                  <button onClick={fetchPokemon} disabled={loading}>
+                    {loading ? "Loading..." : "Load More"}
+                  </button>
+                </div>
+              )
+            }
           </>
-        )}
-        {pokemon.length > 0 && (
-          <div className="pagination">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(1)}
-            >
-              {"<<"} First
-            </button>
-
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-            >
-              Previous
-            </button>
-
-            <span>
-              Page {(filteredPokemon.length > 0) ? currentPage : 0} of {totalPages}
-            </span>
-
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(currentPage + 1)}
-            >
-              Next
-            </button>
-          </div>
-        )}
+        }
       </div>
     </>
-  );
+  )
 }
 
-export default Home;
+export default Home
